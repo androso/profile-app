@@ -1,8 +1,10 @@
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 
 import { AuthService } from '../service/auth.service';
 
 export function useLogin() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -24,6 +26,7 @@ export function useLogin() {
 
     try {
       await AuthService.login(email.trim(), password);
+      router.replace('/protected/dashboard');
     } catch (error: unknown) {
       setErrorMessage(
         error instanceof Error ? error.message : 'An error occurred while logging in.',
