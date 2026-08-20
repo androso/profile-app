@@ -23,8 +23,7 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-router",
-      "expo-secure-store"
+      "expo-router"
     ],
     "extra": {
       "eas": { "projectId": "${EAS_PROJECT_ID}" }
