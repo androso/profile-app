@@ -1,3 +1,4 @@
+import { Feather } from '@expo/vector-icons';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { Drawer } from 'expo-router/drawer';
 import {
@@ -33,17 +34,46 @@ export default function ProtectedLayout() {
           </View>
         </View>
 
-        <View>
+        <View style={styles.menuList}>
           {navigationOptions.map((option) => {
             const isSelected = activeRouteName === option.name;
 
             return (
-              <TouchableOpacity key={option.name}>
-                <Text>{option.label}</Text>
+              <TouchableOpacity
+                key={option.name}
+                style={[
+                  styles.menuItemList,
+                  isSelected && styles.menuItemActive,
+                ]}
+              >
+                <Feather
+                  name={option.icon as any}
+                  size={20}
+                  color={isSelected ? '#FFFFFF' : '#374151'}
+                  style={styles.menuIcon}
+                />
+                <Text
+                  style={[
+                    styles.menuText,
+                    isSelected && styles.menuTextSelected,
+                  ]}
+                >
+                  {option.label}
+                </Text>
               </TouchableOpacity>
             );
           })}
         </View>
+
+        <TouchableOpacity style={styles.logoutButton}>
+          <Feather
+            name="log-out"
+            size={20}
+            color="#EF4444"
+            style={styles.menuIcon}
+          />
+          <Text style={styles.logoutText}>Log out</Text>
+        </TouchableOpacity>
       </View>
     );
   };
@@ -100,5 +130,45 @@ const styles = StyleSheet.create({
     marginTop: 8,
     borderRadius: 12,
     borderColor: '#D5D7DB',
+  },
+  menuList: {
+    flex: 1,
+    paddingTop: 16,
+    paddingHorizontal: 12,
+  },
+  menuItemList: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderRadius: 24,
+    marginVertical: 4,
+  },
+  menuItemActive: {
+    backgroundColor: '#00B074',
+  },
+  menuIcon: {
+    marginRight: 15,
+  },
+  menuText: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#374151',
+  },
+  menuTextSelected: {
+    color: '#FFFFFF',
+  },
+  logoutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 24,
+    borderTopWidth: 1,
+    borderTopColor: '#E5E7EB',
+    marginBottom: 15,
+  },
+  logoutText: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#EF4444',
   },
 });
