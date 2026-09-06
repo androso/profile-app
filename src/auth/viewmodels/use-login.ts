@@ -25,12 +25,15 @@ export function useLogin() {
     setIsLoading(true);
 
     try {
-      await AuthService.login(email.trim(), password);
+      const session = await AuthService.login(email.trim(), password);
+
+      console.log('[Auth] Session token received:', session.token);
       router.replace('/protected/dashboard');
     } catch (error: unknown) {
-      setErrorMessage(
-        error instanceof Error ? error.message : 'An error occurred while logging in.',
-      );
+      const message =
+        error instanceof Error ? error.message : 'An error occurred while logging in.';
+      console.error('[Auth] Login failed:', message);
+      setErrorMessage(message);
     } finally {
       setIsLoading(false);
     }
