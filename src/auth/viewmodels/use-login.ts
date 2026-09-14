@@ -28,7 +28,7 @@ export function useLogin() {
       const session = await AuthService.login(email.trim(), password);
 
       console.log('[Auth] Session token received:', session.token);
-      router.replace('/protected/dashboard');
+      router.replace('/dashboard');
     } catch (error: unknown) {
       const message =
         error instanceof Error ? error.message : 'An error occurred while logging in.';
