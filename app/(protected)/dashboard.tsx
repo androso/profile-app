@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { DrawerActions } from "@react-navigation/native";
-import { useDrawer } from "@/src/admin/viewmodels/useDrawer";
+import { useDrawer } from "../src/admin/viewmodels/use-drawer";
 import { FlatList, TextInput } from "react-native-gesture-handler";
 import { useMemo, useState } from "react";
 

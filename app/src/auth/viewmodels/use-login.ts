@@ -1,10 +1,10 @@
-import { useRouter } from 'expo-router';
 import { useState } from 'react';
 
+import { useAuth } from '../../context/AuthContext';
 import { AuthService } from '../service/auth.service';
 
 export function useLogin() {
-  const router = useRouter();
+  const { saveSession } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -26,9 +26,7 @@ export function useLogin() {
 
     try {
       const session = await AuthService.login(email.trim(), password);
-
-      console.log('[Auth] Session token received:', session.token);
-      router.replace('/dashboard');
+      await saveSession(session.token, session.userResponse);
     } catch (error: unknown) {
       const message =
         error instanceof Error ? error.message : 'An error occurred while logging in.';

@@ -13,7 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AuthError } from '@/components/auth-error';
 import { AuthField } from '@/components/auth-field';
-import { useLogin } from '@/src/auth/viewmodels/use-login';
+import { useLogin } from '../src/auth/viewmodels/use-login';
 
 export default function LoginScreen() {
   const {

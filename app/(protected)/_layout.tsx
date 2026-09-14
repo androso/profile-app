@@ -10,10 +10,12 @@ import {
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import { useDrawer } from '@/src/admin/viewmodels/useDrawer';
+import { useDrawer } from '../src/admin/viewmodels/use-drawer';
+import { useAuth } from '../src/context/AuthContext';
 
 export default function ProtectedLayout() {
   const { profile, navigationOptions } = useDrawer();
+  const { clearSession } = useAuth();
 
   const renderDrawerContent = (props: DrawerContentComponentProps) => {
     const activeIndex = props.state.index;
@@ -45,6 +47,9 @@ export default function ProtectedLayout() {
                   styles.menuItemList,
                   isSelected && styles.menuItemActive,
                 ]}
+                onPress={() => {
+                  props.navigation.navigate(option.name);
+                }}
               >
                 <Feather
                   name={option.icon as any}
@@ -65,7 +70,12 @@ export default function ProtectedLayout() {
           })}
         </View>
 
-        <TouchableOpacity style={styles.logoutButton}>
+        <TouchableOpacity
+          style={styles.logoutButton}
+          onPress={() => {
+            void clearSession();
+          }}
+        >
           <Feather
             name="log-out"
             size={20}
@@ -85,7 +95,18 @@ export default function ProtectedLayout() {
           headerTintColor: '#006C47',
         }}
         drawerContent={renderDrawerContent}
-      />
+      >
+        <Drawer.Screen name="dashboard" options={{ title: 'Dashboard' }} />
+        <Drawer.Screen name="orders" options={{ title: 'Orders' }} />
+        <Drawer.Screen name="inventory" options={{ title: 'Inventory' }} />
+        <Drawer.Screen
+          name="profile"
+          options={{
+            title: 'Profile',
+            drawerItemStyle: { display: 'none' },
+          }}
+        />
+      </Drawer>
     </GestureHandlerRootView>
   );
 }

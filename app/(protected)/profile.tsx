@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useDrawer } from "@/src/admin/viewmodels/useDrawer";
+import { useDrawer } from "../src/admin/viewmodels/use-drawer";
 
 export default function ProfileScreen() {
 	const router = useRouter();
@@ -49,10 +49,8 @@ export default function ProfileScreen() {
 							<Ionicons name="camera" size={16} color="#FFFFFF" />
 						</TouchableOpacity>
 					</View>
-					<Text style={styles.profileName}>
-						Fernando Alexis Blanco González
-					</Text>
-					<Text style={styles.profileSubtitle}>Full Stack Developer</Text>
+					<Text style={styles.profileName}>{profile.name}</Text>
+					<Text style={styles.profileSubtitle}>{profile.role}</Text>
 				</View>
 			</ScrollView>
 		</SafeAreaView>
