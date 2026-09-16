@@ -12,8 +12,8 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useDrawer } from "../src/admin/viewmodels/use-drawer";
-import { useAuth } from "../src/context/AuthContext";
+import { useDrawer } from "../../src/admin/viewmodels/use-drawer";
+import { useAuth } from "../../src/context/AuthContext";
 
 export default function ProfileScreen() {
 	const router = useRouter();

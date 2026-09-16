@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 import '../global.css';
-import { AuthProvider, useAuth } from './src/context/AuthContext';
+import { AuthProvider, useAuth } from '../src/context/AuthContext';
 
 function NavigationGuard() {
   const { token, isLoadingSession } = useAuth();

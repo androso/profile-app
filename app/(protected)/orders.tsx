@@ -5,7 +5,7 @@ import Drawer from 'expo-router/drawer';
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { useDrawer } from '../src/admin/viewmodels/use-drawer';
+import { useDrawer } from '../../src/admin/viewmodels/use-drawer';
 
 type OrderStatus = 'Processing' | 'Shipped' | 'Delivered';
 

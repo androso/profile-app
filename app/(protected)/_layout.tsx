@@ -10,8 +10,8 @@ import {
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import { useDrawer } from '../src/admin/viewmodels/use-drawer';
-import { useAuth } from '../src/context/AuthContext';
+import { useDrawer } from '../../src/admin/viewmodels/use-drawer';
+import { useAuth } from '../../src/context/AuthContext';
 
 export default function ProtectedLayout() {
   const { profile, navigationOptions } = useDrawer();

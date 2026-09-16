@@ -12,7 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AuthError } from '@/components/auth-error';
 import { AuthField } from '@/components/auth-field';
-import { useRegister } from '../src/auth/viewmodels/use-register';
+import { useRegister } from '../../src/auth/viewmodels/use-register';
 
 export default function RegisterScreen() {
   const router = useRouter();
