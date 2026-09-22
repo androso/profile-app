@@ -94,6 +94,14 @@ export default function InventoryScreen() {
         </TouchableOpacity>
       </View>
 
+      <TouchableOpacity
+        style={styles.newCategoryButton}
+        onPress={() => router.push('/category')}
+      >
+        <Ionicons name="add-circle-outline" size={20} color="#006C47" />
+        <Text style={styles.newCategoryText}>New Category</Text>
+      </TouchableOpacity>
+
       <FlatList
         data={INVENTORY}
         keyExtractor={(item) => item.id}
@@ -154,6 +162,25 @@ const styles = StyleSheet.create({
   avatarImage: {
     width: 40,
     height: 40,
+  },
+  newCategoryButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 16,
+    marginBottom: 12,
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#006C47',
+    borderStyle: 'dashed',
+    backgroundColor: '#FFFFFF',
+  },
+  newCategoryText: {
+    marginLeft: 8,
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#006C47',
   },
   list: {
     paddingHorizontal: 16,

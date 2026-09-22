@@ -106,6 +106,13 @@ export default function ProtectedLayout() {
             drawerItemStyle: { display: 'none' },
           }}
         />
+        <Drawer.Screen
+          name="category"
+          options={{
+            title: 'New Category',
+            drawerItemStyle: { display: 'none' },
+          }}
+        />
       </Drawer>
     </GestureHandlerRootView>
   );
