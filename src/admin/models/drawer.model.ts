@@ -2,6 +2,7 @@ export interface DrawerItemOption {
   name: string;
   label: string;
   icon: string;
+  subItems?: DrawerItemOption[];
 }
 
 export interface AdminProfile {

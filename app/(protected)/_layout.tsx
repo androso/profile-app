@@ -1,6 +1,7 @@
 import { Feather } from '@expo/vector-icons';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { Drawer } from 'expo-router/drawer';
+import { useState } from 'react';
 import {
   Image,
   StyleSheet,
@@ -16,6 +17,7 @@ import { useAuth } from '../../src/context/AuthContext';
 export default function ProtectedLayout() {
   const { profile, navigationOptions } = useDrawer();
   const { clearSession } = useAuth();
+  const [isInventoryExpanded, setIsInventoryExpanded] = useState(false);
 
   const renderDrawerContent = (props: DrawerContentComponentProps) => {
     const activeIndex = props.state.index;
@@ -39,33 +41,84 @@ export default function ProtectedLayout() {
         <View style={styles.menuList}>
           {navigationOptions.map((option) => {
             const isSelected = activeRouteName === option.name;
+            const hasSubItems = Boolean(option.subItems?.length);
 
             return (
-              <TouchableOpacity
-                key={option.name}
-                style={[
-                  styles.menuItemList,
-                  isSelected && styles.menuItemActive,
-                ]}
-                onPress={() => {
-                  props.navigation.navigate(option.name);
-                }}
-              >
-                <Feather
-                  name={option.icon as any}
-                  size={20}
-                  color={isSelected ? '#FFFFFF' : '#374151'}
-                  style={styles.menuIcon}
-                />
-                <Text
+              <View key={option.name}>
+                <TouchableOpacity
                   style={[
-                    styles.menuText,
-                    isSelected && styles.menuTextSelected,
+                    styles.menuItemList,
+                    isSelected && styles.menuItemActive,
                   ]}
+                  onPress={() => {
+                    if (hasSubItems) {
+                      setIsInventoryExpanded(!isInventoryExpanded);
+                      return;
+                    }
+
+                    props.navigation.navigate(option.name);
+                  }}
                 >
-                  {option.label}
-                </Text>
-              </TouchableOpacity>
+                  <Feather
+                    name={option.icon as any}
+                    size={20}
+                    color={isSelected ? '#FFFFFF' : '#374151'}
+                    style={styles.menuIcon}
+                  />
+                  <Text
+                    style={[
+                      styles.menuText,
+                      isSelected && styles.menuTextSelected,
+                    ]}
+                  >
+                    {option.label}
+                  </Text>
+                  {hasSubItems ? (
+                    <Feather
+                      name={isInventoryExpanded ? 'chevron-up' : 'chevron-down'}
+                      size={16}
+                      color={isSelected ? '#FFFFFF' : '#374151'}
+                      style={styles.expandIcon}
+                    />
+                  ) : null}
+                </TouchableOpacity>
+
+                {hasSubItems && isInventoryExpanded && option.subItems
+                  ? option.subItems.map((subItem) => {
+                      const isSubSelected = activeRouteName === subItem.name;
+
+                      return (
+                        <TouchableOpacity
+                          key={subItem.name}
+                          style={[
+                            styles.menuItemList,
+                            styles.subMenuItem,
+                            isSubSelected && styles.menuItemActive,
+                          ]}
+                          onPress={() => {
+                            props.navigation.navigate(subItem.name);
+                          }}
+                        >
+                          <Feather
+                            name={subItem.icon as any}
+                            size={16}
+                            color={isSubSelected ? '#FFFFFF' : '#4B5563'}
+                            style={styles.menuIcon}
+                          />
+                          <Text
+                            style={[
+                              styles.menuText,
+                              styles.subMenuText,
+                              isSubSelected && styles.menuTextSelected,
+                            ]}
+                          >
+                            {subItem.label}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })
+                  : null}
+              </View>
             );
           })}
         </View>
@@ -110,6 +163,13 @@ export default function ProtectedLayout() {
           name="category"
           options={{
             title: 'New Category',
+            drawerItemStyle: { display: 'none' },
+          }}
+        />
+        <Drawer.Screen
+          name="create-product"
+          options={{
+            title: 'Products',
             drawerItemStyle: { display: 'none' },
           }}
         />
@@ -178,10 +238,19 @@ const styles = StyleSheet.create({
   menuIcon: {
     marginRight: 15,
   },
+  expandIcon: {
+    marginLeft: 'auto',
+  },
+  subMenuItem: {
+    paddingLeft: 40,
+  },
   menuText: {
     fontSize: 15,
     fontWeight: 'bold',
     color: '#374151',
+  },
+  subMenuText: {
+    fontSize: 14,
   },
   menuTextSelected: {
     color: '#FFFFFF',
