@@ -34,8 +34,8 @@ export default function CreateProductScreen() {
             <Ionicons name="arrow-back-outline" size={26} />
           </TouchableOpacity>
           <View style={styles.titleWrapper}>
-            <Text style={styles.headerTitle}>Admin Portal</Text>
-            <Text style={styles.headerSubtitle}>Nuevo producto</Text>
+            <Text style={styles.headerTitle}>ADMIN PORTAL</Text>
+            <Text style={styles.headerSubtitle}>Nuevo Producto</Text>
           </View>
           <View style={styles.boxIconContainer}>
             <Ionicons name="cube-outline" size={22} />
@@ -59,7 +59,7 @@ export default function CreateProductScreen() {
 
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Nombre del producto</Text>
-              <TextInput style={styles.textInput} placeholder="Zapato Nike" />
+              <TextInput style={styles.textInput} placeholder="Ej. Zapato Nike" />
             </View>
 
             <View style={styles.inputGroup}>
@@ -71,7 +71,7 @@ export default function CreateProductScreen() {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>SKU</Text>
+              <Text style={styles.inputLabel}>SKU / Código de Barra</Text>
               <View style={styles.inputWithIcon}>
                 <MaterialCommunityIcons
                   name="barcode-scan"
@@ -100,6 +100,76 @@ export default function CreateProductScreen() {
             <View style={styles.counterContainer}>
               <Text style={styles.counterText}>{description.length}/2000</Text>
             </View>
+          </View>
+
+          <View style={styles.card}>
+            <View style={styles.cardHeader}>
+              <Feather
+                name="dollar-sign"
+                size={20}
+                color="#006C47"
+                style={styles.cardHeaderIcon}
+              />
+              <Text style={styles.cardTitle}>Precios e Inventario</Text>
+            </View>
+
+            <View style={styles.rowCols}>
+              <View style={styles.column}>
+                <Text style={styles.inputLabel}>Precio regular</Text>
+                <View style={styles.inputPriceWrapper}>
+                  <Text style={styles.dollarSign}>$</Text>
+                  <TextInput
+                    style={styles.priceInput}
+                    placeholder="0.0"
+                    keyboardType="numeric"
+                  />
+                </View>
+              </View>
+              <View style={styles.column}>
+                <Text style={styles.inputLabel}>Precio de oferta</Text>
+                <View style={styles.inputPriceWrapper}>
+                  <Text style={styles.dollarSign}>$</Text>
+                  <TextInput
+                    style={styles.priceInput}
+                    placeholder="0.0"
+                    keyboardType="numeric"
+                  />
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.rowCols}>
+              <View style={styles.column}>
+                <Text style={styles.inputLabel}>Stock inicial</Text>
+                <View style={styles.inputPriceWrapper}>
+                  <TextInput
+                    style={styles.priceInput}
+                    placeholder="50"
+                    keyboardType="numeric"
+                  />
+                </View>
+              </View>
+              <View style={styles.column}>
+                <Text style={styles.inputLabel}>Stock mínimo</Text>
+                <View style={styles.inputPriceWrapper}>
+                  <TextInput
+                    style={styles.priceInput}
+                    placeholder="5"
+                    keyboardType="numeric"
+                  />
+                </View>
+              </View>
+            </View>
+
+            <TouchableOpacity style={styles.btnSave}>
+              <Ionicons
+                name="checkmark-outline"
+                size={22}
+                color="#FFFFFF"
+                style={styles.checkIcon}
+              />
+              <Text style={styles.btnSaveText}>Guardar producto</Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -236,5 +306,48 @@ const styles = StyleSheet.create({
   counterText: {
     fontSize: 12,
     color: '#6B7280',
+  },
+  rowCols: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  column: {
+    flex: 1,
+    marginBottom: 5,
+  },
+  inputPriceWrapper: {
+    height: 48,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  dollarSign: {
+    marginRight: 6,
+  },
+  priceInput: {
+    flex: 1,
+    padding: 0,
+    fontSize: 14,
+  },
+  btnSave: {
+    backgroundColor: '#006C47',
+    height: 48,
+    borderRadius: 10,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+    marginTop: 15,
+  },
+  checkIcon: {
+    marginRight: 8,
+  },
+  btnSaveText: {
+    color: '#FFFFFF',
+    fontSize: 15,
   },
 });
