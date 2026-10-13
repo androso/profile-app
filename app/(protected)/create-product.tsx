@@ -5,8 +5,8 @@ import {
 } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import Drawer from 'expo-router/drawer';
-import { useState } from 'react';
 import {
+  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -18,9 +18,30 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useCreateProduct } from '../../src/products/viewmodels/useCreateProduct';
+
 export default function CreateProductScreen() {
   const router = useRouter();
-  const [description, setDescription] = useState('');
+  const {
+    name,
+    setName,
+    categoryId,
+    sku,
+    setSku,
+    description,
+    setDescription,
+    regularPrice,
+    setRegularPrice,
+    offerPrice,
+    setOfferPrice,
+    initialStock,
+    setInitialStock,
+    minStockAlert,
+    setMinStockAlert,
+    isLoadingProduct,
+    errorMessage,
+    submitProduct,
+  } = useCreateProduct();
 
   return (
     <SafeAreaView style={styles.container}>
@@ -59,14 +80,27 @@ export default function CreateProductScreen() {
 
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Nombre del producto</Text>
-              <TextInput style={styles.textInput} placeholder="Ej. Zapato Nike" />
+              <TextInput
+                style={styles.textInput}
+                placeholder="Ej. Zapato Nike"
+                value={name}
+                onChangeText={setName}
+                editable={!isLoadingProduct}
+              />
             </View>
 
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Categoría</Text>
-              <TouchableOpacity style={styles.selectorInput}>
-                <Text style={styles.selectorText}>Selecciona la categoría</Text>
-                <Feather name="chevron-down" size={20} color="#6B7280" />
+              <TouchableOpacity
+                style={[styles.selectorInput, styles.disabledInput]}
+                disabled
+              >
+                <Text style={styles.selectorText}>
+                  {categoryId === null
+                    ? 'Selecciona la categoría'
+                    : `Categoría temporal (ID ${categoryId})`}
+                </Text>
+                <Feather name="lock" size={16} color="#6B7280" />
               </TouchableOpacity>
             </View>
 
@@ -79,7 +113,13 @@ export default function CreateProductScreen() {
                   color="#6B7280"
                   style={styles.inputIcon}
                 />
-                <TextInput style={styles.textInputScan} placeholder="PR-0001" />
+                <TextInput
+                  style={styles.textInputScan}
+                  placeholder="PR-0001"
+                  value={sku}
+                  onChangeText={setSku}
+                  editable={!isLoadingProduct}
+                />
               </View>
             </View>
 
@@ -94,6 +134,7 @@ export default function CreateProductScreen() {
                 maxLength={2000}
                 value={description}
                 onChangeText={setDescription}
+                editable={!isLoadingProduct}
               />
             </View>
 
@@ -121,7 +162,10 @@ export default function CreateProductScreen() {
                   <TextInput
                     style={styles.priceInput}
                     placeholder="0.0"
-                    keyboardType="numeric"
+                    keyboardType="decimal-pad"
+                    value={regularPrice}
+                    onChangeText={setRegularPrice}
+                    editable={!isLoadingProduct}
                   />
                 </View>
               </View>
@@ -131,8 +175,11 @@ export default function CreateProductScreen() {
                   <Text style={styles.dollarSign}>$</Text>
                   <TextInput
                     style={styles.priceInput}
-                    placeholder="0.0"
-                    keyboardType="numeric"
+                    placeholder="Opcional"
+                    keyboardType="decimal-pad"
+                    value={offerPrice}
+                    onChangeText={setOfferPrice}
+                    editable={!isLoadingProduct}
                   />
                 </View>
               </View>
@@ -146,6 +193,9 @@ export default function CreateProductScreen() {
                     style={styles.priceInput}
                     placeholder="50"
                     keyboardType="numeric"
+                    value={initialStock}
+                    onChangeText={setInitialStock}
+                    editable={!isLoadingProduct}
                   />
                 </View>
               </View>
@@ -156,19 +206,36 @@ export default function CreateProductScreen() {
                     style={styles.priceInput}
                     placeholder="5"
                     keyboardType="numeric"
+                    value={minStockAlert}
+                    onChangeText={setMinStockAlert}
+                    editable={!isLoadingProduct}
                   />
                 </View>
               </View>
             </View>
 
-            <TouchableOpacity style={styles.btnSave}>
-              <Ionicons
-                name="checkmark-outline"
-                size={22}
-                color="#FFFFFF"
-                style={styles.checkIcon}
-              />
-              <Text style={styles.btnSaveText}>Guardar producto</Text>
+            {errorMessage ? (
+              <Text style={styles.errorMessage}>{errorMessage}</Text>
+            ) : null}
+
+            <TouchableOpacity
+              style={[styles.btnSave, isLoadingProduct && styles.btnSaveDisabled]}
+              onPress={() => void submitProduct()}
+              disabled={isLoadingProduct}
+            >
+              {isLoadingProduct ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <>
+                  <Ionicons
+                    name="checkmark-outline"
+                    size={22}
+                    color="#FFFFFF"
+                    style={styles.checkIcon}
+                  />
+                  <Text style={styles.btnSaveText}>Guardar producto</Text>
+                </>
+              )}
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -273,6 +340,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#6B7280',
   },
+  disabledInput: {
+    backgroundColor: '#F9FAFB',
+    opacity: 0.8,
+  },
   inputWithIcon: {
     height: 48,
     borderWidth: 1,
@@ -342,6 +413,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
     marginTop: 15,
+  },
+  btnSaveDisabled: {
+    opacity: 0.7,
+  },
+  errorMessage: {
+    color: '#B91C1C',
+    fontSize: 13,
+    marginTop: 8,
   },
   checkIcon: {
     marginRight: 8,

@@ -1,7 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import Drawer from 'expo-router/drawer';
+import { useState } from 'react';
 import {
+  ActivityIndicator,
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -11,10 +14,77 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { CategoryService } from '../../src/categories/service/category.service';
+import { useAuth } from '../../src/context/AuthContext';
 
 export default function CategoryScreen() {
   const router = useRouter();
+  const { token } = useAuth();
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSaveCategory = async () => {
+    const trimmedName = name.trim();
+    const trimmedDescription = description.trim();
+
+    if (!trimmedName) {
+      Alert.alert(
+        'Campo requerido',
+        'Por favor, ingrese el nombre de la categoría.',
+      );
+      return;
+    }
+
+    if (!trimmedDescription) {
+      Alert.alert(
+        'Campo requerido',
+        'Por favor, ingrese la descripción de la categoría.',
+      );
+      return;
+    }
+
+    if (!token?.trim()) {
+      Alert.alert('Error de sesión', 'No se encontró el token de sesión.');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const newCategory = await CategoryService.createCategory(
+        trimmedName,
+        trimmedDescription,
+        token,
+      );
+
+      Alert.alert(
+        'Categoría creada',
+        `La categoría ${newCategory.name} se guardó exitosamente.`,
+        [
+          {
+            text: 'Aceptar',
+            onPress: () => {
+              setName('');
+              setDescription('');
+              router.replace('/dashboard');
+            },
+          },
+        ],
+      );
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error && error.message
+          ? error.message
+          : 'No se pudo guardar la categoría.';
+      Alert.alert('Error al guardar categoría', message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -48,7 +118,13 @@ export default function CategoryScreen() {
           <View style={styles.formCard}>
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Nombre de la categoría</Text>
-              <TextInput style={styles.textInput} placeholder="Dulcería" />
+              <TextInput
+                style={styles.textInput}
+                placeholder="Dulcería"
+                value={name}
+                onChangeText={setName}
+                editable={!isLoading}
+              />
             </View>
 
             <View style={styles.inputGroup}>
@@ -59,17 +135,30 @@ export default function CategoryScreen() {
                 multiline
                 numberOfLines={5}
                 textAlignVertical="top"
+                value={description}
+                onChangeText={setDescription}
+                editable={!isLoading}
               />
             </View>
 
-            <TouchableOpacity style={styles.btnSave}>
-              <Ionicons
-                name="checkmark"
-                size={22}
-                color="#FFFFFF"
-                style={styles.checkIcon}
-              />
-              <Text style={styles.btnSaveText}>Guardar categoría</Text>
+            <TouchableOpacity
+              style={[styles.btnSave, isLoading && styles.btnSaveDisabled]}
+              onPress={() => void handleSaveCategory()}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <>
+                  <Ionicons
+                    name="checkmark"
+                    size={22}
+                    color="#FFFFFF"
+                    style={styles.checkIcon}
+                  />
+                  <Text style={styles.btnSaveText}>Guardar categoría</Text>
+                </>
+              )}
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -175,6 +264,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
+  },
+  btnSaveDisabled: {
+    opacity: 0.7,
   },
   checkIcon: {
     marginRight: 8,

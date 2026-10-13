@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRouter } from "expo-router";
 import Drawer from "expo-router/drawer";
 import {
+	ActivityIndicator,
 	Dimensions,
 	Image,
 	StyleSheet,
@@ -12,8 +13,10 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { DrawerActions } from "@react-navigation/native";
 import { useDrawer } from "../../src/admin/viewmodels/use-drawer";
+import { CategoryService } from "../../src/categories/service/category.service";
+import { useAuth } from "../../src/context/AuthContext";
 import { FlatList, TextInput } from "react-native-gesture-handler";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const { width } = Dimensions.get("window");
 const CARD_WIDTH = (width - 44) / 2;
@@ -78,15 +81,72 @@ const MOCK_PRODUCTS: Product[] = [
 	},
 ];
 
-const CATEGORIES = ["All Products", "Electronics", "Fashions", "VideoGames"];
-
 export default function DashboardScreen() {
 	const navigation = useNavigation();
 	const router = useRouter();
 	const { profile } = useDrawer();
+	const { token } = useAuth();
 
-	const [selectedCategory, setSelectedCategory] = useState("All Products");
+	const [categories, setCategories] = useState(["All Categories"]);
+	const [selectedCategory, setSelectedCategory] = useState("All Categories");
 	const [searchQuery, setSearchQuery] = useState("");
+	const [isLoadingCategories, setIsLoadingCategories] = useState(false);
+
+	useEffect(() => {
+		let isActive = true;
+
+		const fetchCategories = async () => {
+			if (!token?.trim()) {
+				setCategories(["All Categories"]);
+				setSelectedCategory("All Categories");
+				setIsLoadingCategories(false);
+				return;
+			}
+
+			setIsLoadingCategories(true);
+
+			try {
+				const data = await CategoryService.getCategories(token);
+				const categoryNames = Array.from(
+					new Set(
+						data
+							.map((category) => category.name.trim())
+							.filter((name) => name.length > 0),
+					),
+				);
+
+				if (!isActive) {
+					return;
+				}
+
+				setCategories(["All Categories", ...categoryNames]);
+				setSelectedCategory((currentCategory) =>
+					categoryNames.includes(currentCategory)
+						? currentCategory
+						: "All Categories",
+				);
+			} catch (error: unknown) {
+				if (isActive) {
+					const message =
+						error instanceof Error && error.message
+							? error.message
+							: "No se pudieron obtener las categorías.";
+					console.error("[Dashboard] Failed to load categories:", message);
+				}
+			} finally {
+				if (isActive) {
+					setIsLoadingCategories(false);
+				}
+			}
+		};
+
+		void fetchCategories();
+
+		return () => {
+			isActive = false;
+		};
+	}, [token]);
+
 	const openMenu = () => {
 		navigation.dispatch(DrawerActions.openDrawer());
 	};
@@ -94,7 +154,7 @@ export default function DashboardScreen() {
 	const filteredProductByCategory = useMemo(() => {
 		return MOCK_PRODUCTS.filter((product) => {
 			const matchCategory =
-				selectedCategory === "All Products" ||
+				selectedCategory === "All Categories" ||
 				product.category === selectedCategory;
 			const matchSearch =
 				product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -134,34 +194,42 @@ export default function DashboardScreen() {
 				/>
 			</View>
 			<View style={styles.categoriesWrapper}>
-				<FlatList
-					horizontal
-					showsHorizontalScrollIndicator={false}
-					data={CATEGORIES}
-					keyExtractor={(item) => item}
-					contentContainerStyle={styles.categoriesList}
-					renderItem={({ item }) => {
-						const isSelected = item === selectedCategory;
-						return (
-							<TouchableOpacity
-								onPress={() => setSelectedCategory(item)}
-								style={[
-									styles.categoryItem,
-									isSelected && styles.categoryItemSelected,
-								]}
-							>
-								<Text
+				{isLoadingCategories ? (
+					<ActivityIndicator
+						color="#005C3A"
+						size="small"
+						style={styles.categoriesLoader}
+					/>
+				) : (
+					<FlatList
+						horizontal
+						showsHorizontalScrollIndicator={false}
+						data={categories}
+						keyExtractor={(item) => item}
+						contentContainerStyle={styles.categoriesList}
+						renderItem={({ item }) => {
+							const isSelected = item === selectedCategory;
+							return (
+								<TouchableOpacity
+									onPress={() => setSelectedCategory(item)}
 									style={[
-										styles.categoryText,
-										isSelected && styles.categoryTextSelected,
+										styles.categoryItem,
+										isSelected && styles.categoryItemSelected,
 									]}
 								>
-									{item}
-								</Text>
-							</TouchableOpacity>
-						);
-					}}
-				/>
+									<Text
+										style={[
+											styles.categoryText,
+											isSelected && styles.categoryTextSelected,
+										]}
+									>
+										{item}
+									</Text>
+								</TouchableOpacity>
+							);
+						}}
+					/>
+				)}
 			</View>
 			<FlatList
 				data={filteredProductByCategory}
@@ -261,6 +329,10 @@ const styles = StyleSheet.create({
 	categoriesWrapper: {
 		maxHeight: 50,
 		marginBottom: 16,
+	},
+	categoriesLoader: {
+		height: 50,
+		alignSelf: "center",
 	},
 	categoriesList: {
 		paddingHorizontal: 16,
